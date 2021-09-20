@@ -10,7 +10,6 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
-import time
 # ---------------------------------------------------------------- # 
 # Web App Title
 st.markdown('''# **The EDA App**''')
@@ -78,11 +77,10 @@ if uploaded_file is not None:
     
     st.markdown("---")
     st.header("Data Visualization:") 
-#Progress        
-    my_bar = st.progress(0)
-
 # ---------------------------------------------------------------- #       
-    st.subheader("Pair Plots:")
+#Progress 
+    st.subheader("Pair Plots:")       
+    my_bar = st.progress(0)    
     st.markdown(" ")
     num_cols = df.select_dtypes([int,float]).columns.tolist()
     my_bar.progress(20)
@@ -93,20 +91,22 @@ if uploaded_file is not None:
         st.pyplot(fig)
     plot_box(num_cols)
 #Progress    
-    
     my_bar.progress(100)
 # ---------------------------------------------------------------- #
-    my_bar = st.progress(0)
 #Creating the correlation matrix
     st.subheader("Correlation matrix:")
+    my_bar = st.progress(0)
     st.markdown(" ")
+    my_bar.progress(10)
     corr_mat = df[num_cols].corr()
     corr_mat_mask = np.array(corr_mat)
+    my_bar.progress(30)
 #Creating a heatmap
     corr_mat_mask[np.tril_indices_from(corr_mat)] = False
     fig, ax = plt.subplots(constrained_layout=True,figsize=[20,20])
-    ax = sns.heatmap(corr_mat, mask=corr_mat_mask, vmax=.8, square=True, annot=True, cmap='RdYlGn_r');
-    st.pyplot(fig)
+    my_bar.progress(50)
+    ax = sns.heatmap(corr_mat, mask=corr_mat_mask, vmax=.8, square=True, annot=True, cmap='RdYlGn_r')
+#    st.pyplot(fig)
     my_bar.progress(100)
 # ---------------------------------------------------------------- #   
 else:
