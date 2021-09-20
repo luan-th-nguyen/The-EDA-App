@@ -18,8 +18,8 @@ st.subheader("This web app performs the basic **Exploratory Data Analysis** that
 c1, c2 = st.columns(2)
 with c1:
     st.markdown('''
-                * Read Data
-                * Initial Inspections
+                * Sample Data and Dimension
+                * Summary of Object type columns
                 * Summary of Numeric type columms
                 ''')
 with c2:
@@ -32,9 +32,9 @@ st.markdown("---")
 # ---------------------------------------------------------------- #
 # Upload CSV data
 with st.sidebar.header('Upload your CSV data'):
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV file", type=["csv"])
+    uploaded_file = st.sidebar.file_uploader("Upload a CSV file as Input data", type=["csv"])
     st.sidebar.markdown("""
-[Example CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/delaney_solubility_with_descriptors.csv)
+[Demo CSV input file](https://raw.githubusercontent.com/dataprofessor/data/master/delaney_solubility_with_descriptors.csv)
 """)
 
 # ---------------------------------------------------------------- #
@@ -60,6 +60,9 @@ if uploaded_file is not None:
         
 # ---------------------------------------------------------------- #    
     with col3:
+        col3.subheader('**DataFrame Dimensions**')
+        df_dim = pd.DataFrame({'Count':[df.shape[0],df.shape[1]]},index=['Rows','Columns'])
+        col3.dataframe(df_dim)
         col3.subheader('**Data Types by Columns**')
         df_data_type = pd.DataFrame({'Columns':df.columns,'Data Type':str(df.columns.dtype)})
         col3.dataframe(df_data_type)
@@ -106,7 +109,7 @@ if uploaded_file is not None:
     fig, ax = plt.subplots(constrained_layout=True,figsize=[20,20])
     my_bar.progress(50)
     ax = sns.heatmap(corr_mat, mask=corr_mat_mask, vmax=.8, square=True, annot=True, cmap='RdYlGn_r')
-#    st.pyplot(fig)
+    st.pyplot(fig)
     my_bar.progress(100)
 # ---------------------------------------------------------------- #   
 else:
@@ -123,7 +126,6 @@ else:
         df = load_data()
         st.header('**Input DataFrame**')
         st.dataframe(df)
-        st.write('---')
 
 # ---------------------------------------------------------------- # 
 st.markdown("---")
