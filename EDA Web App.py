@@ -10,6 +10,7 @@ import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
+import math
 # ---------------------------------------------------------------- # 
 # Web App Title
 st.markdown('''# **The EDA App**''')
@@ -55,17 +56,19 @@ if uploaded_file is not None:
         df_num = df.select_dtypes([int,float])
         col1.write(df_num.describe())
         col1.subheader('**Object Columns Data**')
-        df_object = df.select_dtypes(object)
+        df_object = df.select_dtypes([object,np.object])
         col1.write(df_object.head(5))
+        
+    st.subheader('**Data Types by Columns**')
+    data = dict(df.dtypes)
+    df_data_type = data
+    st.write(df_data_type)
         
 # ---------------------------------------------------------------- #    
     with col3:
         col3.subheader('**DataFrame Dimensions**')
         df_dim = pd.DataFrame({'Count':[df.shape[0],df.shape[1]]},index=['Rows','Columns'])
         col3.dataframe(df_dim)
-        col3.subheader('**Data Types by Columns**')
-        df_data_type = pd.DataFrame({'Columns':df.columns,'Data Type':str(df.columns.dtype)})
-        col3.dataframe(df_data_type)
         col3.subheader('**Null Values by Columns**')
         df_null = df.isnull().sum().to_frame('Null Values')
         df_null['Null Values %'] = round(df_null['Null Values']/df.shape[0],4)*100
@@ -95,6 +98,34 @@ if uploaded_file is not None:
     plot_box(num_cols)
 #Progress    
     my_bar.progress(100)
+# ---------------------------------------------------------------- #
+#Creating the Boxplots matrix
+    st.subheader("Boxplots:")
+    num_cols = df.select_dtypes([int,float]).columns.tolist()
+    def box_plot(df,col_list):
+        plt.figure(figsize=[30,30])
+        _ = math.ceil(math.sqrt(len(num_cols)))
+        fig, axs = plt.subplots(_, _, sharey=True)
+        for i, _c in enumerate(num_cols):
+            ax = axs.flat[i]
+            ax.boxplot(df[[_c]],autorange =True,meanline =True,vert=False)
+            ax.set_title(_c)
+        fig.tight_layout(pad=2.5)
+        st.pyplot(fig)
+    box_plot(df,num_cols)
+    # ---------------------------------------------------------------- #
+#Creating the Histograms matrix
+    st.subheader("Histograms:")
+    obj_cols = df.select_dtypes([object]).columns.tolist()
+    def box_plot(df,col_list):
+        plt.figure(figsize=[60,60])
+        _ = math.ceil(math.sqrt(len(obj_cols)))
+        fig, axs = plt.subplots(_, _, sharey=True,figsize=[20,20])
+        for i, _c in enumerate(obj_cols):
+            ax = df[_c].value_counts().plot.barh()
+        fig.tight_layout(pad=2.0)
+        st.pyplot(fig)
+    box_plot(df,obj_cols)
 # ---------------------------------------------------------------- #
 #Creating the correlation matrix
     st.subheader("Correlation matrix:")
