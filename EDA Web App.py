@@ -129,7 +129,8 @@ if uploaded_file is not None:
     obj_cols = df.select_dtypes([object]).columns.tolist()
     def box_plot(df,col_list):
         plt.figure(figsize=[60,60])
-        _ = math.ceil(math.sqrt(len(obj_cols)))
+        #_ = math.ceil(math.sqrt(len(obj_cols)))
+        _ = max(1, math.ceil(math.sqrt(len(obj_cols))))
         fig, axs = plt.subplots(_, _, sharey=True,figsize=[20,20])
         for i, _c in enumerate(obj_cols):
             ax = df[_c].value_counts().plot.barh()
