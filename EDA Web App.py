@@ -11,8 +11,15 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
+from fpdf import FPDF
+import base64
+from tempfile import NamedTemporaryFile
 # ---------------------------------------------------------------- # 
 # Web App Title
+def create_download_link(val, filename):
+    b64 = base64.b64encode(val)  # val looks like b'...'
+    return f'<a href="data:application/octet-stream;base64,{b64.decode()}" download="{filename}.pdf">Download file</a>'
+
 st.markdown('''# **The EDA App**''')
 st.markdown("---")
 st.subheader("This web app performs the basic **Exploratory Data Analysis** that includes:")
@@ -83,7 +90,8 @@ if uploaded_file is not None:
     
     st.markdown("---")
     st.header("Data Visualization:") 
-# ---------------------------------------------------------------- #       
+# ---------------------------------------------------------------- #    
+    figs = []   
 #Progress 
     st.subheader("Pair Plots:")       
     my_bar = st.progress(0)    
@@ -93,7 +101,8 @@ if uploaded_file is not None:
     def plot_box(cols_list):
         #dff=dataframe
         data = df[num_cols]
-        fig = sns.pairplot(data)
+        fig = sns.pairplot(data,corner=True)
+        figs.append(fig)
         st.pyplot(fig)
     plot_box(num_cols)
 #Progress    
@@ -111,6 +120,7 @@ if uploaded_file is not None:
             ax.boxplot(df[[_c]],autorange =True,meanline =True,vert=False)
             ax.set_title(_c)
         fig.tight_layout(pad=2.5)
+        figs.append(fig)
         st.pyplot(fig)
     box_plot(df,num_cols)
     # ---------------------------------------------------------------- #
@@ -124,6 +134,7 @@ if uploaded_file is not None:
         for i, _c in enumerate(obj_cols):
             ax = df[_c].value_counts().plot.barh()
         fig.tight_layout(pad=2.0)
+        figs.append(fig)
         st.pyplot(fig)
     box_plot(df,obj_cols)
 # ---------------------------------------------------------------- #
@@ -140,12 +151,27 @@ if uploaded_file is not None:
     fig, ax = plt.subplots(constrained_layout=True,figsize=[20,20])
     my_bar.progress(50)
     ax = sns.heatmap(corr_mat, mask=corr_mat_mask, vmax=.8, square=True, annot=True, cmap='RdYlGn_r')
+    figs.append(fig)
     st.pyplot(fig)
     my_bar.progress(100)
+# ---------------------------------------------------------------- #  
+    st.markdown("---")
+    st.markdown(" ")
+    st.markdown(" ")
+    button = st.button('Press here to export the report')
+    if button:
+        pdf = FPDF()
+        for fig in figs:
+           pdf.add_page()
+           with NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
+                    fig.savefig(tmpfile.name)
+                    pdf.image(tmpfile.name,x=50, y=40, w = 100, h = 100)
+        html = create_download_link(pdf.output(dest="S").encode("latin-1"), "EDA Report")
+        st.markdown(html, unsafe_allow_html=True)
 # ---------------------------------------------------------------- #   
 else:
     st.info('Waiting for CSV file to be uploaded.')
-    if st.button('Press here to use Example Dataset'):
+    if st.button('Press here to use Example Dataset '):
         # Example data
         @st.cache
         def load_data():
