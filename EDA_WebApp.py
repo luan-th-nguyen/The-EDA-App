@@ -11,7 +11,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
 import math
-from fpdf import FPDF
+#from fpdf import FPDF
 import base64
 from tempfile import NamedTemporaryFile
 # ---------------------------------------------------------------- # 
@@ -161,14 +161,15 @@ if uploaded_file is not None:
     st.markdown(" ")
     button = st.button('Press here to export the report')
     if button:
-        pdf = FPDF()
-        for fig in figs:
-           pdf.add_page()
-           with NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
-                    fig.savefig(tmpfile.name)
-                    pdf.image(tmpfile.name,x=50, y=40, w = 100, h = 100)
-        html = create_download_link(pdf.output(dest="S").encode("latin-1"), "EDA Report")
-        st.markdown(html, unsafe_allow_html=True)
+        pass
+        #pdf = FPDF()
+        #for fig in figs:
+        #   pdf.add_page()
+        #   with NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
+        #            fig.savefig(tmpfile.name)
+        #            pdf.image(tmpfile.name,x=50, y=40, w = 100, h = 100)
+        #html = create_download_link(pdf.output(dest="S").encode("latin-1"), "EDA Report")
+        #st.markdown(html, unsafe_allow_html=True)
 # ---------------------------------------------------------------- #   
 else:
     st.info('Waiting for CSV file to be uploaded.')

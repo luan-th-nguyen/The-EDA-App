@@ -1,10 +1,8 @@
 name: streamlit
 channels:
   - defaults
-  - foxbms
 dependencies:
   - matplotlib
   - numpy
   - seaborn
   - pandas
-  - fpdf
