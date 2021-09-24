@@ -1,0 +1,8 @@
+name: streamlit
+channels:
+  - defaults
+dependencies:
+  - matplotlib
+  - numpy
+  - seaborn
+  - pandas
